@@ -991,6 +991,7 @@ public final class PlatformDependent {
      * Create a new {@link Queue} which is safe to use for multiple producers (different threads) and a single
      * consumer (one thread!).
      * @return A MPSC queue which may be unbounded.
+     * MPSC multiple Producer single comsumer
      */
     public static <T> Queue<T> newMpscQueue() {
         return Mpsc.newMpscQueue();

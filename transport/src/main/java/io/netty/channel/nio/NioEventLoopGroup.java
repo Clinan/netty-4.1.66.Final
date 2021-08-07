@@ -58,6 +58,7 @@ public class NioEventLoopGroup extends MultithreadEventLoopGroup {
      * {@link SelectorProvider} which is returned by {@link SelectorProvider#provider()}.
      */
     public NioEventLoopGroup(ThreadFactory threadFactory) {
+        // SelectorProvider.provider() 区别平台。JDK，Linux windows macos
         this(0, threadFactory, SelectorProvider.provider());
     }
 
@@ -164,7 +165,7 @@ public class NioEventLoopGroup extends MultithreadEventLoopGroup {
         }
     }
 
-
+    // CORE_CODE
     @Override
     protected EventLoop newChild(Executor executor, Object... args) throws Exception {
         /**
@@ -174,6 +175,7 @@ public class NioEventLoopGroup extends MultithreadEventLoopGroup {
         SelectorProvider selectorProvider = (SelectorProvider) args[0];
         SelectStrategyFactory selectStrategyFactory = (SelectStrategyFactory) args[1];
         RejectedExecutionHandler rejectedExecutionHandler = (RejectedExecutionHandler) args[2];
+        // 不是传统对Java里面对ArrayBlockingQueue LinkedBlockingQueue。
         EventLoopTaskQueueFactory taskQueueFactory = null;
         EventLoopTaskQueueFactory tailTaskQueueFactory = null;
 
@@ -184,6 +186,9 @@ public class NioEventLoopGroup extends MultithreadEventLoopGroup {
         if (argsLength > 4) {
             tailTaskQueueFactory = (EventLoopTaskQueueFactory) args[4];
         }
+        // 按照NIO套路来说， 一个worker线程，需要处理多个channel，那么的话，
+        // channel数据到达之后，就要执行就需要有一个队列来对这些task排队。
+        // 队列是MPSC的
         return new NioEventLoop(this, executor, selectorProvider,
                 selectStrategyFactory.newSelectStrategy(),
                 rejectedExecutionHandler, taskQueueFactory, tailTaskQueueFactory);

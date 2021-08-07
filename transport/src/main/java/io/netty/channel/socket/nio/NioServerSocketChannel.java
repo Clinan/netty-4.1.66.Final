@@ -130,7 +130,9 @@ public class NioServerSocketChannel extends AbstractNioMessageChannel
     @SuppressJava6Requirement(reason = "Usage guarded by java version check")
     @Override
     protected void doBind(SocketAddress localAddress) throws Exception {
+        // 绑定端口
         if (PlatformDependent.javaVersion() >= 7) {
+            // JDK7及以上
             javaChannel().bind(localAddress, config.getBacklog());
         } else {
             javaChannel().socket().bind(localAddress, config.getBacklog());

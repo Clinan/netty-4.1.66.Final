@@ -147,12 +147,13 @@ public class ServerBootstrap extends AbstractBootstrap<ServerBootstrap, ServerCh
                 if (handler != null) {
                     pipeline.addLast(handler);
                 }
-
+                // 这是ServerSocketChannel
                 ch.eventLoop().execute(new Runnable() {
                     @Override
                     public void run() {
                         // 在这里添加一个main-reactor的handler，也就是ServerBootstrapAcceptor
                         pipeline.addLast(new ServerBootstrapAcceptor(
+                                // currentChildGroup就是workers, 在床SocketChannel，需要绑定一个EventLoop，
                                 ch, currentChildGroup, currentChildHandler, currentChildOptions, currentChildAttrs));
                     }
                 });

@@ -75,6 +75,7 @@ public final class DefaultEventExecutorChooserFactory implements EventExecutorCh
         }
 
         @Override
+        // 为idx是原子自增，这个和EventLoopGroup里的线程数量取余数，循环得到一个EventLoop
         public EventExecutor next() {
             return executors[(int) Math.abs(idx.getAndIncrement() % executors.length)];
         }

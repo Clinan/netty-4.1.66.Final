@@ -296,7 +296,7 @@ public abstract class AbstractBootstrap<B extends AbstractBootstrap<B, C>, C ext
                         // Registration was successful, so set the correct executor to use.
                         // See https://github.com/netty/netty/issues/2586
                         promise.registered();
-
+                        // 绑定端口
                         doBind0(regFuture, channel, localAddress, promise);
                     }
                 }
@@ -308,6 +308,7 @@ public abstract class AbstractBootstrap<B extends AbstractBootstrap<B, C>, C ext
     final ChannelFuture initAndRegister() {
         Channel channel = null;
         try {
+            // 创建一个ServerSocketChannel
             channel = channelFactory.newChannel();
             init(channel);
         } catch (Throwable t) {
@@ -320,7 +321,8 @@ public abstract class AbstractBootstrap<B extends AbstractBootstrap<B, C>, C ext
             // as the Channel is not registered yet we need to force the usage of the GlobalEventExecutor
             return new DefaultChannelPromise(new FailedChannel(), GlobalEventExecutor.INSTANCE).setFailure(t);
         }
-        // 注册channel
+        // 注册channel，
+        // config().group()就是EventLoopGroup，也就是bossGroup
         ChannelFuture regFuture = config().group().register(channel);
         if (regFuture.cause() != null) {
             if (channel.isRegistered()) {

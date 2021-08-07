@@ -124,6 +124,7 @@ public final class NioEventLoop extends SingleThreadEventLoop {
                  SelectStrategy strategy, RejectedExecutionHandler rejectedExecutionHandler,
                  EventLoopTaskQueueFactory taskQueueFactory, EventLoopTaskQueueFactory tailTaskQueueFactory) {
         // 创建了队列，默认是Integer.MAX_VALUE个。
+        // taskQueueFactory默认是null
         super(parent, executor, false, newTaskQueue(taskQueueFactory), newTaskQueue(tailTaskQueueFactory),
                 rejectedExecutionHandler);
         this.provider = ObjectUtil.checkNotNull(selectorProvider, "selectorProvider");
@@ -136,6 +137,7 @@ public final class NioEventLoop extends SingleThreadEventLoop {
     private static Queue<Runnable> newTaskQueue(
             EventLoopTaskQueueFactory queueFactory) {
         if (queueFactory == null) {
+            // 实际创建队列对地方。65535
             return newTaskQueue0(DEFAULT_MAX_PENDING_TASKS);
         }
         return queueFactory.newTaskQueue(DEFAULT_MAX_PENDING_TASKS);
@@ -481,6 +483,7 @@ public final class NioEventLoop extends SingleThreadEventLoop {
                 } else if (strategy > 0) {
                     final long ioStartTime = System.nanoTime();
                     try {
+                        // 处理监听的key
                         processSelectedKeys();
                     } finally {
                         // Ensure we always run tasks.
@@ -641,7 +644,7 @@ public final class NioEventLoop extends SingleThreadEventLoop {
             // null out entry in the array to allow to have it GC'ed once the Channel close
             // See https://github.com/netty/netty/issues/2363
             selectedKeys.keys[i] = null;
-
+            // 这是一个socket channel
             final Object a = k.attachment();
 
             if (a instanceof AbstractNioChannel) {
